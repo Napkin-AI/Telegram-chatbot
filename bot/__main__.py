@@ -18,6 +18,7 @@ def main() -> None:
                         chat_id=update['message']['chat']['id'],
                         text='Something is wrong. Try again'
                     )
+                    offset = max(offset, update['update_id'] + 1)
                     continue
                 
                 if 'text' in update['message']:
@@ -38,7 +39,8 @@ def main() -> None:
                     )
 
                 offset = max(offset, update['update_id'] + 1)
-                    
+                print(f"The query with chat_id: {update['message']['chat']['id']} successfully done")
+
             time.sleep(1)
         
     except KeyboardInterrupt:
