@@ -7,7 +7,7 @@ load_dotenv()
 
 def makeRequest(method: str, **params) -> dict:
     json_data = json.dumps(params).encode()
-    
+
     request = urllib.request.Request(
         method='POST',
         url=f"{os.getenv("TELEGRAM_BASE_URI")}/{method}",
@@ -18,7 +18,7 @@ def makeRequest(method: str, **params) -> dict:
     with urllib.request.urlopen(request) as response:
         response_body = response.read().decode('utf-8')
         response_json = json.loads(response_body)
-        
+
         assert response_json.get("ok", False) == True, "bad response"
         return response_json['result']
 
@@ -37,3 +37,6 @@ def getMe():
 
 def sendSticker(chat_id: int, sticker: str) -> dict:
     return makeRequest('sendSticker', chat_id=chat_id, sticker=sticker)
+
+def sendPhoto(chat_id: int, photo: str) -> dict:
+    return makeRequest('sendPhoto', chat_id=chat_id, photo=photo)

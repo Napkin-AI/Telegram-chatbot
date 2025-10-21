@@ -13,8 +13,8 @@ def recreate_database() -> None:
             connection.execute("""
                 CREATE TABLE IF NOT EXISTS telegram_updates
                 (
-                    id INTEGER PRIMARY KEY
-                    payload TEXT NOT NULL         
+                    id INTEGER PRIMARY KEY,
+                    payload TEXT NOT NULL
                 )
                 """)
 

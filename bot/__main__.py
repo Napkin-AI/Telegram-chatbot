@@ -3,48 +3,31 @@ import time
 import bot.database_client
 import bot.telegram_client
 
+from bot.handlers import (
+    message_handler,
+    sticker_handler,
+    database_handler,
+    photo_handler
+)
+from bot.long_pooling import start_long_pooling
+from bot.dispatcher import Dispatcher
+
 def main() -> None:
     offset: int = 0
-    
+    print("\n\033[42mBot is active!\033[0m\n")
+    handlers = [
+        database_handler.DatabaseHandler(),
+        message_handler.MessageHandler(),
+        sticker_handler.StickerHandler(),
+        photo_handler.PhotoHandler()
+        ]
+
     try:
-        while True:
-            updates = bot.telegram_client.getUpdates(offset)
-            bot.database_client.persist_updates(updates)
-            
-            for update in updates:
-                
-                if 'message' not in update: 
-                    bot.telegram_client.sendMessage(
-                        chat_id=update['message']['chat']['id'],
-                        text='Something is wrong. Try again'
-                    )
-                    offset = max(offset, update['update_id'] + 1)
-                    continue
-                
-                if 'text' in update['message']:
-                    bot.telegram_client.sendMessage(
-                        chat_id=update['message']['chat']['id'],
-                        text=update['message']['text']
-                    )
-                elif 'sticker' in update['message']:
-                    sticker_file_id = update['message']['sticker']['file_id']
-                    bot.telegram_client.sendSticker(
-                        chat_id=update['message']['chat']['id'],
-                        sticker=sticker_file_id
-                    )
-                else:
-                    bot.telegram_client.sendMessage(
-                        chat_id=update['message']['chat']['id'],
-                        text="Not implemented"
-                    )
-
-                offset = max(offset, update['update_id'] + 1)
-                print(f"The query with chat_id: {update['message']['chat']['id']} successfully done")
-
-            time.sleep(1)
-        
+        dispatcher = Dispatcher()
+        dispatcher.add_handlers(handlers)
+        start_long_pooling(dispatcher)
     except KeyboardInterrupt:
-        print("Done")
+        print("\n\033[41mBot is inactive!\033[0m\n")
 
 
 if __name__ == '__main__':
