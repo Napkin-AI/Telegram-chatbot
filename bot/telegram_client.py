@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def makeRequest(method: str, **params) -> dict:
+def make_request(method: str, **params) -> dict:
     json_data = json.dumps(params).encode()
 
     request = urllib.request.Request(
@@ -23,20 +23,21 @@ def makeRequest(method: str, **params) -> dict:
         return response_json['result']
 
 
-def getUpdates(offset: int) -> dict:
-    return makeRequest('getUpdates', offset=offset)
+def get_updates(offset: int) -> dict:
+    return make_request('getUpdates', offset=offset)
 
 
-def sendMessage(chat_id: int, text: int) -> dict:
-    return makeRequest('sendMessage', chat_id=chat_id, text=text)
+def send_message(**kwargs) -> dict:
+    print(kwargs)
+    return make_request('sendMessage', **kwargs)
 
 
-def getMe():
-    return makeRequest('getMe')
+def get_me():
+    return make_request('getMe')
 
 
-def sendSticker(chat_id: int, sticker: str) -> dict:
-    return makeRequest('sendSticker', chat_id=chat_id, sticker=sticker)
+def send_sticker(chat_id: int, sticker: str) -> dict:
+    return make_request('sendSticker', chat_id=chat_id, sticker=sticker)
 
-def sendPhoto(chat_id: int, photo: str) -> dict:
-    return makeRequest('sendPhoto', chat_id=chat_id, photo=photo)
+def send_photo(chat_id: int, photo: str) -> dict:
+    return make_request('sendPhoto', chat_id=chat_id, photo=photo)

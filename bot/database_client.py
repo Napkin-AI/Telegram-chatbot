@@ -16,7 +16,51 @@ def recreate_database() -> None:
                     id INTEGER PRIMARY KEY,
                     payload TEXT NOT NULL
                 )
-                """)
+                """
+            )
+            connection.execute("""
+                CREATE TABLE IF NOT EXISTS users
+                (
+                    id INTEGER PRIMARY KEY,
+                    telegram_id INTEGER NOT NULL UNIQUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    state TEXT DEFAULT NULL,
+                    order_json TEXT DEFAULT NULL
+                )
+                """
+            )
+
+
+def ensure_user_exists(telegram_id: int) -> None:
+
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
+        with connection:
+            cursor = connection.execute(
+                "SELECT * FROM users WHERE telegram_id = ?", (telegram_id,)
+            )
+            print(telegram_id)
+            if not cursor.fetchall():
+                connection.execute(
+                    "INSERT INTO users (telegram_id) VALUES (?)", (telegram_id,)
+                )
+
+
+def clear_user_state_order(telegram_id: int) -> None:
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
+        with connection:
+            connection.execute(
+                "UPDATE users SET state = NULL, order_json = NULL WHERE telegram_id = ?",
+                (telegram_id, )
+                )
+
+
+def update_user_state(telegram_id: int, state: str) -> None:
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
+        with connection:
+            connection.execute(
+                "UPDATE users SET state = ? WHERE telegram_id = ?",
+                (state, telegram_id)
+            )
 
 
 def persist_updates(updates: list) -> None:
@@ -28,3 +72,21 @@ def persist_updates(updates: list) -> None:
                     (json.dumps(update, ensure_ascii=False, indent=4), )
                 )
             connection.executemany("INSERT INTO telegram_updates (payload) VALUES (?)", data)
+
+
+def get_user(telegram_id: int | None) -> None:
+    if telegram_id is None:
+        return telegram_id
+
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
+        with connection:
+            columns = ['id', 'telegram_id', 'created_at', 'state', 'order_json']
+            cursor = connection.execute(
+                f"SELECT {', '.join(columns)} FROM users WHERE telegram_id = ?",
+                (telegram_id, )
+            )
+
+            responce = cursor.fetchone()
+            if responce:
+                return {key: value for (key, value) in zip(columns, responce)}
+            return None
