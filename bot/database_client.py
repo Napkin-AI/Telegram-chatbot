@@ -38,7 +38,6 @@ def ensure_user_exists(telegram_id: int) -> None:
             cursor = connection.execute(
                 "SELECT * FROM users WHERE telegram_id = ?", (telegram_id,)
             )
-            print(telegram_id)
             if not cursor.fetchall():
                 connection.execute(
                     "INSERT INTO users (telegram_id) VALUES (?)", (telegram_id,)
@@ -74,7 +73,7 @@ def persist_updates(updates: list) -> None:
             connection.executemany("INSERT INTO telegram_updates (payload) VALUES (?)", data)
 
 
-def get_user(telegram_id: int | None) -> None:
+def get_user(telegram_id: int | None) -> dict | None:
     if telegram_id is None:
         return telegram_id
 
@@ -90,3 +89,34 @@ def get_user(telegram_id: int | None) -> None:
             if responce:
                 return {key: value for (key, value) in zip(columns, responce)}
             return None
+
+
+def update_user_order(telegram_id: int, order: dict) -> None:
+     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
+        with connection:
+            last_order = get_user_order(telegram_id)
+            if isinstance(last_order, str):
+                last_order = json.loads(last_order)
+            if last_order is not None:
+                order = last_order | order
+            connection.execute(
+                "UPDATE users SET order_json = ? WHERE telegram_id = ?",
+                (json.dumps(order, ensure_ascii=False, indent=2), telegram_id)
+            )
+
+
+def get_user_order(telegram_id: int | None) -> dict | None:
+    if telegram_id is None:
+        return telegram_id
+
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
+        with connection:
+            cursor = connection.execute(
+                f"SELECT order_json FROM users WHERE telegram_id = ?",
+                (telegram_id, )
+            )
+
+            responce = cursor.fetchone()
+            if isinstance(responce[0], str):
+                return  json.loads(responce[0])
+            return responce[0]

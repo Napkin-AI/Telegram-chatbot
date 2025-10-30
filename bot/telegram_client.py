@@ -23,21 +23,29 @@ def make_request(method: str, **params) -> dict:
         return response_json['result']
 
 
-def get_updates(offset: int) -> dict:
+def get_updates(offset: int, **kwargs: dict) -> dict:
     return make_request('getUpdates', offset=offset)
 
 
-def send_message(**kwargs) -> dict:
-    print(kwargs)
-    return make_request('sendMessage', **kwargs)
+def send_message(chat_id: int, text: str, **kwargs: dict) -> dict:
+    return make_request('sendMessage', chat_id=chat_id, text=text, **kwargs)
 
 
 def get_me():
     return make_request('getMe')
 
 
-def send_sticker(chat_id: int, sticker: str) -> dict:
-    return make_request('sendSticker', chat_id=chat_id, sticker=sticker)
+def send_sticker(chat_id: int, sticker: str, **kwargs: dict) -> dict:
+    return make_request('sendSticker', chat_id=chat_id, sticker=sticker, **kwargs)
 
-def send_photo(chat_id: int, photo: str) -> dict:
-    return make_request('sendPhoto', chat_id=chat_id, photo=photo)
+
+def send_photo(chat_id: int, photo: str, **kwargs: dict) -> dict:
+    return make_request('sendPhoto', chat_id=chat_id, photo=photo, **kwargs)
+
+
+def delete_message(chat_id: int, message_id: int, **kwargs: dict) -> dict:
+    return make_request('deleteMessage', chat_id=chat_id, message_id=message_id, **kwargs)
+
+
+def answer_callback_query(callback_query_id: int, **kwargs: dict) -> dict:
+    return make_request('answerCallbackQuery', callback_query_id=callback_query_id, **kwargs)
