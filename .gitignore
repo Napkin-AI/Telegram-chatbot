@@ -3,6 +3,5 @@ venv
 .venv
 *.sqlite
 scripts/*
-*/__pycache__/*
-bot/__pycache__/*
-/bot/handlers/__pycache__/*
+**/__pycache__/*
+.ruff_cache

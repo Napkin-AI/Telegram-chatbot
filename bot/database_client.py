@@ -5,12 +5,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def recreate_database() -> None:
 
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
             connection.execute("DROP TABLE IF EXISTS telegram_updates")
-            connection.execute("""
+            connection.execute(
+                """
                 CREATE TABLE IF NOT EXISTS telegram_updates
                 (
                     id INTEGER PRIMARY KEY,
@@ -18,7 +20,8 @@ def recreate_database() -> None:
                 )
                 """
             )
-            connection.execute("""
+            connection.execute(
+                """
                 CREATE TABLE IF NOT EXISTS users
                 (
                     id INTEGER PRIMARY KEY,
@@ -49,16 +52,15 @@ def clear_user_state_order(telegram_id: int) -> None:
         with connection:
             connection.execute(
                 "UPDATE users SET state = NULL, order_json = NULL WHERE telegram_id = ?",
-                (telegram_id, )
-                )
+                (telegram_id,),
+            )
 
 
 def update_user_state(telegram_id: int, state: str) -> None:
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
             connection.execute(
-                "UPDATE users SET state = ? WHERE telegram_id = ?",
-                (state, telegram_id)
+                "UPDATE users SET state = ? WHERE telegram_id = ?", (state, telegram_id)
             )
 
 
@@ -67,10 +69,10 @@ def persist_updates(updates: list) -> None:
         with connection:
             data = []
             for update in updates:
-                data.append(
-                    (json.dumps(update, ensure_ascii=False, indent=4), )
-                )
-            connection.executemany("INSERT INTO telegram_updates (payload) VALUES (?)", data)
+                data.append((json.dumps(update, ensure_ascii=False, indent=4),))
+            connection.executemany(
+                "INSERT INTO telegram_updates (payload) VALUES (?)", data
+            )
 
 
 def get_user(telegram_id: int | None) -> dict | None:
@@ -79,10 +81,10 @@ def get_user(telegram_id: int | None) -> dict | None:
 
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
-            columns = ['id', 'telegram_id', 'created_at', 'state', 'order_json']
+            columns = ["id", "telegram_id", "created_at", "state", "order_json"]
             cursor = connection.execute(
                 f"SELECT {', '.join(columns)} FROM users WHERE telegram_id = ?",
-                (telegram_id, )
+                (telegram_id,),
             )
 
             responce = cursor.fetchone()
@@ -92,7 +94,7 @@ def get_user(telegram_id: int | None) -> dict | None:
 
 
 def update_user_order(telegram_id: int, order: dict) -> None:
-     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
             last_order = get_user_order(telegram_id)
             if isinstance(last_order, str):
@@ -101,7 +103,7 @@ def update_user_order(telegram_id: int, order: dict) -> None:
                 order = last_order | order
             connection.execute(
                 "UPDATE users SET order_json = ? WHERE telegram_id = ?",
-                (json.dumps(order, ensure_ascii=False, indent=2), telegram_id)
+                (json.dumps(order, ensure_ascii=False, indent=2), telegram_id),
             )
 
 
@@ -112,11 +114,10 @@ def get_user_order(telegram_id: int | None) -> dict | None:
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
             cursor = connection.execute(
-                f"SELECT order_json FROM users WHERE telegram_id = ?",
-                (telegram_id, )
+                "SELECT order_json FROM users WHERE telegram_id = ?", (telegram_id,)
             )
 
             responce = cursor.fetchone()
             if isinstance(responce[0], str):
-                return  json.loads(responce[0])
+                return json.loads(responce[0])
             return responce[0]
