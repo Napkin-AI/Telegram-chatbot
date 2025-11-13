@@ -1,6 +1,7 @@
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
+from bot.domain.order_state import OrderState
 
 
 class EnsureUserExists(Handler):
@@ -8,7 +9,7 @@ class EnsureUserExists(Handler):
     def can_handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,
@@ -18,7 +19,7 @@ class EnsureUserExists(Handler):
     def handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,

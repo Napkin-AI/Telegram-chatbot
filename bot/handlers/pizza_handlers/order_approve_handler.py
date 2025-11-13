@@ -1,6 +1,7 @@
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
+from bot.domain.order_state import OrderState
 
 
 class FinishOrder(Handler):
@@ -8,20 +9,20 @@ class FinishOrder(Handler):
     def can_handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
         print(update, state, order_json, sep="\n", end="\n\n\n\n")
-        if "callback_query" not in update or state != "WAIT_FOR_ORDER_APROVE":
+        if "callback_query" not in update or state != OrderState.WAIT_FOR_ORDER_APPROVE:
             return False
         return update["callback_query"]["data"].startswith("approve_")
 
     def handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,
@@ -51,7 +52,7 @@ class FinishOrder(Handler):
             }
             return HandlerStatus.CONTINUE
         else:
-            storage.update_user_state(telegram_id, "NULL")
+            storage.update_user_state(telegram_id, OrderState.ORDER_FINISHED)
             messanger.send_message(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
                 text="ORDER SUCCESSFULLY FINISHED!",

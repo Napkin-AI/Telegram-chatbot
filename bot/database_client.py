@@ -2,6 +2,7 @@ import sqlite3
 import os
 import json
 from dotenv import load_dotenv
+from bot.domain.order_state import OrderState
 
 load_dotenv()
 
@@ -56,7 +57,7 @@ def clear_user_state_order(telegram_id: int) -> None:
             )
 
 
-def update_user_state(telegram_id: int, state: str) -> None:
+def update_user_state(telegram_id: int, state: OrderState) -> None:
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
             connection.execute(

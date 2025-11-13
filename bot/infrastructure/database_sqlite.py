@@ -4,6 +4,7 @@ import json
 
 from dotenv import load_dotenv
 from bot.domain.storage import Storage
+from bot.domain.order_state import OrderState
 
 load_dotenv()
 
@@ -57,7 +58,7 @@ class StorageSqlite(Storage):
                     (telegram_id,),
                 )
 
-    def update_user_state(self, telegram_id: int, state: str) -> None:
+    def update_user_state(self, telegram_id: int, state: OrderState) -> None:
         with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
             with connection:
                 connection.execute(

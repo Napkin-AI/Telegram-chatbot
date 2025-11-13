@@ -4,6 +4,7 @@ from bot.handlers.pizza_handlers import json_data
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
+from bot.domain.order_state import OrderState
 
 
 class MessageStartHandler(Handler):
@@ -11,7 +12,7 @@ class MessageStartHandler(Handler):
     def can_handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,
@@ -26,14 +27,14 @@ class MessageStartHandler(Handler):
     def handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
         telegram_id = update["message"]["from"]["id"]
         storage.clear_user_state_order(telegram_id)
-        storage.update_user_state(telegram_id, "WAIT_FOR_PIZZA_NAME")
+        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PIZZA_NAME)
 
         messanger.send_message(
             chat_id=update["message"]["chat"]["id"],

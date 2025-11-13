@@ -2,6 +2,7 @@ from bot.handlers.pizza_handlers import json_data
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
+from bot.domain.order_state import OrderState
 
 
 class SelectPizzaSize(Handler):
@@ -9,19 +10,19 @@ class SelectPizzaSize(Handler):
     def can_handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
-        if "callback_query" not in update or state != "WAIT_FOR_PIZZA_SIZE":
+        if "callback_query" not in update or state != OrderState.WAIT_FOR_PIZZA_SIZE:
             return False
         return update["callback_query"]["data"].startswith("size_")
 
     def handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         order_json: dict,
         storage: Storage,
         messanger: Messanger,
@@ -31,7 +32,7 @@ class SelectPizzaSize(Handler):
         pizza_size = callback_data.replace("size_", "").title()
 
         storage.update_user_order(telegram_id, {"pizza_size": pizza_size})
-        storage.update_user_state(telegram_id, "WAIT_FOR_DRINKS")
+        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_DRINKS)
 
         messanger.answer_callback_query(update["callback_query"]["id"])
         messanger.delete_message(

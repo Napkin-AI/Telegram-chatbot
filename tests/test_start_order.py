@@ -1,6 +1,7 @@
 from bot.dispatcher import Dispatcher
 from bot.handlers.pizza_handlers.message_start_handler import MessageStartHandler
 from tests.mocks import Mock
+from bot.domain.order_state import OrderState
 
 
 def test_update_database_execution():
@@ -28,7 +29,7 @@ def test_update_database_execution():
 
     user_state = None
 
-    def upd_user_state(tg_id: int, state: str):
+    def upd_user_state(tg_id: int, state: OrderState):
         nonlocal user_state
         assert tg_id == 99121
         user_state = state
