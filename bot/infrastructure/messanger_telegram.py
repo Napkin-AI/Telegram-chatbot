@@ -12,7 +12,7 @@ class MessangerTelegram(Messanger):
 
     def _make_request(self, method: str, **params) -> dict:
         json_data = json.dumps(params).encode()
-
+        print(f"URL: {os.getenv("TELEGRAM_BASE_URI")}/{method}")
         request = urllib.request.Request(
             method="POST",
             url=f"{os.getenv("TELEGRAM_BASE_URI")}/{method}",
