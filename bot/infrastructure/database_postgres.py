@@ -30,6 +30,8 @@ class StoragePostgres(Storage):
         if database is None:
             raise ValueError("POSTGRES_DATABASE environment variable is not set")
 
+        print("PG_DATA: ")
+        print(host, port, user, password, database, sep='\n\n')
         return pg8000.connect(
             host=host,
             port=int(port),

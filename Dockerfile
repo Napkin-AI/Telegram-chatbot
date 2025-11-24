@@ -14,6 +14,5 @@ RUN python -m venv /app/venv && \
 ENV PATH="/app/venv/bin:$PATH"
 
 COPY bot/ ./bot/
-COPY .env .
 
 ENTRYPOINT [ "/entrypoint.sh" ]

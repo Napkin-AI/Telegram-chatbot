@@ -75,6 +75,7 @@ run: docker_net
 	docker run -d \
 	  --name $(BOT_CONTAINER) \
 	  --restart unless-stopped \
+	  -e TELEGRAM_BASE_URI="${TELEGRAM_BASE_URI}" \
 	  -e POSTGRES_HOST="$(POSTGRES_CONTAINER)" \
 	  -e POSTGRES_PORT="5432" \
 	  -e POSTGRES_USER="$(POSTGRES_USER)" \
