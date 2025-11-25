@@ -2,6 +2,15 @@ from bot.handlers.handler import Handler, HandlerStatus
 from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
 
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s.%(msecs)03d] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
 
 class Dispatcher:
 
@@ -13,10 +22,12 @@ class Dispatcher:
     def add_handlers(self, handlers: list[Handler]) -> None:
         self._handlers.extend(handlers)
 
-    def dispatch(self, update: dict) -> None:
+    async def dispatch(self, update: dict) -> None:
+
+        logger.info(f"DISPATCH {update["update_id"]} started")
 
         telegram_id = self._get_telegram_id_from_update(update)
-        user = self._storage.get_user(telegram_id)
+        user = await self._storage.get_user(telegram_id)
         user_state = user.get("state") if user else None
         order_json = user["order_json"] if user else "{}"
 
@@ -29,13 +40,12 @@ class Dispatcher:
             if handler.can_handle(
                 update, user_state, order_json, self._storage, self._messanger
             ):
-                if (
-                    handler.handle(
-                        update, user_state, order_json, self._storage, self._messanger
-                    )
-                    == HandlerStatus.STOP
-                ):
+                status = await handler.handle(
+                    update, user_state, order_json, self._storage, self._messanger
+                )
+                if status == HandlerStatus.STOP:
                     break
+        logger.info(f"DISPATCH {update["update_id"]} finished")
 
     def _get_telegram_id_from_update(self, update: dict) -> int | None:
         if "message" in update:

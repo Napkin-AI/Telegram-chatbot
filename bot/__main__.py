@@ -5,9 +5,10 @@ from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
 from bot.infrastructure.database_postgres import StoragePostgres
 from bot.infrastructure.messanger_telegram import MessangerTelegram
+import asyncio
 
 
-def main() -> None:
+async def main() -> None:
     print("\n\033[42mBot is active!\033[0m\n")
     try:
         storage: Storage = StoragePostgres()
@@ -15,10 +16,10 @@ def main() -> None:
 
         dispatcher = Dispatcher(storage, messanger)
         dispatcher.add_handlers(get_handlers())
-        start_long_pooling(dispatcher, messanger)
+        await start_long_pooling(dispatcher, messanger)
     except KeyboardInterrupt:
         print("\n\033[41mBot is inactive!\033[0m\n")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

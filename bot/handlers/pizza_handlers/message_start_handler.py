@@ -1,4 +1,5 @@
 import json
+import asyncio
 
 from bot.handlers.pizza_handlers import json_data
 from bot.handlers.handler import Handler, HandlerStatus
@@ -24,7 +25,7 @@ class MessageStartHandler(Handler):
             and update["message"]["text"] == "/start"
         )
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -33,19 +34,19 @@ class MessageStartHandler(Handler):
         messanger: Messanger,
     ) -> bool:
         telegram_id = update["message"]["from"]["id"]
-        storage.clear_user_state_order(telegram_id)
-        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PIZZA_NAME)
+        await storage.clear_user_state_order(telegram_id)
+        await storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PIZZA_NAME)
 
-        messanger.send_message(
-            chat_id=update["message"]["chat"]["id"],
-            text="Hello to telegram Pizza shop bot!",
-            reply_markup=json.dumps({"remove_keyboard": True}),
+        await asyncio.gather(
+            messanger.send_message(
+                chat_id=update["message"]["chat"]["id"],
+                text="Hello to telegram Pizza shop bot!",
+                reply_markup=json.dumps({"remove_keyboard": True}),
+            ),
+            messanger.send_message(
+                chat_id=update["message"]["chat"]["id"],
+                text="Choose pizza",
+                reply_markup=json_data.select_pizza,
+            ),
         )
-
-        messanger.send_message(
-            chat_id=update["message"]["chat"]["id"],
-            text="Choose pizza",
-            reply_markup=json_data.select_pizza,
-        )
-
         return HandlerStatus.STOP

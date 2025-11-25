@@ -3,6 +3,7 @@ from bot.handlers.handler import Handler, HandlerStatus
 from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
+import asyncio
 
 
 class SelectPizzaSize(Handler):
@@ -19,7 +20,7 @@ class SelectPizzaSize(Handler):
             return False
         return update["callback_query"]["data"].startswith("size_")
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -31,19 +32,18 @@ class SelectPizzaSize(Handler):
         callback_data = update["callback_query"]["data"]
         pizza_size = callback_data.replace("size_", "").title()
 
-        storage.update_user_order(telegram_id, {"pizza_size": pizza_size})
-        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_DRINKS)
-
-        messanger.answer_callback_query(update["callback_query"]["id"])
-        messanger.delete_message(
-            chat_id=update["callback_query"]["message"]["chat"]["id"],
-            message_id=update["callback_query"]["message"]["message_id"],
+        await asyncio.gather(
+            storage.update_user_order(telegram_id, {"pizza_size": pizza_size}),
+            storage.update_user_state(telegram_id, OrderState.WAIT_FOR_DRINKS),
+            messanger.answer_callback_query(update["callback_query"]["id"]),
+            messanger.delete_message(
+                chat_id=update["callback_query"]["message"]["chat"]["id"],
+                message_id=update["callback_query"]["message"]["message_id"],
+            ),
+            messanger.send_message(
+                chat_id=update["callback_query"]["message"]["chat"]["id"],
+                text="Choose drink",
+                reply_markup=json_data.select_drinks,
+            ),
         )
-
-        messanger.send_message(
-            chat_id=update["callback_query"]["message"]["chat"]["id"],
-            text="Choose drink",
-            reply_markup=json_data.select_drinks,
-        )
-
         return HandlerStatus.STOP

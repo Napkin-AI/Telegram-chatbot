@@ -1,9 +1,12 @@
+import pytest
+
 from bot.dispatcher import Dispatcher
 from bot.handlers.update_database_handler import UpdateDatabaseHandler
 from tests.mocks import Mock
 
 
-def test_update_database_execution():
+@pytest.mark.asyncio
+async def test_update_database_execution():
     test_update = {
         "update_id": 631112444,
         "message": {
@@ -28,13 +31,13 @@ def test_update_database_execution():
 
     persist_update_called = False
 
-    def persist_updates(updates: list[dict]) -> None:
+    async def persist_updates(updates: list[dict]) -> None:
         nonlocal persist_update_called
         persist_update_called = True
         assert len(updates) == 1
         assert updates[0] == test_update
 
-    def get_user(telegram_id: int) -> dict | None:
+    async def get_user(telegram_id: int) -> dict | None:
         assert telegram_id == 99121
         return None
 
@@ -43,6 +46,6 @@ def test_update_database_execution():
     dispatcher = Dispatcher(mock_storage, Mock({}))
     update_logger = UpdateDatabaseHandler()
     dispatcher.add_handlers([update_logger])
-    dispatcher.dispatch(test_update)
+    await dispatcher.dispatch(test_update)
 
     assert persist_update_called

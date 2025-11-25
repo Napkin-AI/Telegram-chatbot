@@ -2,6 +2,7 @@ from bot.handlers.handler import Handler, HandlerStatus
 from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
+import asyncio
 
 
 class FinishOrder(Handler):
@@ -19,7 +20,7 @@ class FinishOrder(Handler):
             return False
         return update["callback_query"]["data"].startswith("approve_")
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -30,16 +31,17 @@ class FinishOrder(Handler):
         telegram_id = update["callback_query"]["from"]["id"]
         callback_data = update["callback_query"]["data"]
 
-        storage.update_user_order(telegram_id, {"approved": callback_data})
-
-        messanger.answer_callback_query(update["callback_query"]["id"])
-        messanger.delete_message(
-            chat_id=update["callback_query"]["message"]["chat"]["id"],
-            message_id=update["callback_query"]["message"]["message_id"],
+        await asyncio.gather(
+            storage.update_user_order(telegram_id, {"approved": callback_data}),
+            messanger.answer_callback_query(update["callback_query"]["id"]),
+            messanger.delete_message(
+                chat_id=update["callback_query"]["message"]["chat"]["id"],
+                message_id=update["callback_query"]["message"]["message_id"],
+            ),
         )
 
         if callback_data == "approve_restore":
-            messanger.send_message(
+            await messanger.send_message(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
                 text="OK! Please, choose pizza again.",
             )
@@ -52,10 +54,11 @@ class FinishOrder(Handler):
             }
             return HandlerStatus.CONTINUE
         else:
-            storage.update_user_state(telegram_id, OrderState.ORDER_FINISHED)
-            messanger.send_message(
-                chat_id=update["callback_query"]["message"]["chat"]["id"],
-                text="ORDER SUCCESSFULLY FINISHED!",
+            await asyncio.gather(
+                storage.update_user_state(telegram_id, OrderState.ORDER_FINISHED),
+                messanger.send_message(
+                    chat_id=update["callback_query"]["message"]["chat"]["id"],
+                    text="ORDER SUCCESSFULLY FINISHED!",
+                ),
             )
-
         return HandlerStatus.STOP

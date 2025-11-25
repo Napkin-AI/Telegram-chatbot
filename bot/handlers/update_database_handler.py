@@ -16,7 +16,7 @@ class UpdateDatabaseHandler(Handler):
     ) -> bool:
         return True
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -24,5 +24,5 @@ class UpdateDatabaseHandler(Handler):
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
-        storage.persist_updates([update])
+        await storage.persist_updates([update])
         return HandlerStatus.CONTINUE

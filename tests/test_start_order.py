@@ -1,10 +1,13 @@
+import pytest
+
 from bot.dispatcher import Dispatcher
 from bot.handlers.pizza_handlers.message_start_handler import MessageStartHandler
 from tests.mocks import Mock
 from bot.domain.order_state import OrderState
 
 
-def test_update_database_execution():
+@pytest.mark.asyncio
+async def test_update_database_execution():
     test_update = {
         "update_id": 631112444,
         "message": {
@@ -29,22 +32,26 @@ def test_update_database_execution():
 
     user_state = None
 
-    def upd_user_state(tg_id: int, state: OrderState):
+    async def upd_user_state(tg_id: int, state: OrderState):
         nonlocal user_state
         assert tg_id == 99121
         user_state = state
 
+    async def clear_user_state_order(args):
+        print("Clear_user_state_order passed")
+
+    async def get_user(tg_id):
+        return None
+
     mock_storage = Mock(
         {
-            "clear_user_state_order": lambda args: print(
-                "Clear_user_state_order passed"
-            ),
-            "get_user": lambda tg_id: None,
+            "clear_user_state_order": clear_user_state_order,
+            "get_user": get_user,
             "update_user_state": upd_user_state,
         }
     )
 
-    def send_message(chat_id: int, text: str, **kwargs: dict) -> None:
+    async def send_message(chat_id: int, text: str, **kwargs: dict) -> None:
         assert chat_id == 99121
         assert "pizza" in text.lower()
         assert "reply_markup" in kwargs
@@ -66,6 +73,6 @@ def test_update_database_execution():
         test_update, "Any", {}, Mock({}), Mock({})
     ), "Handler can not handle correct update"
 
-    dispatcher.dispatch(test_update)
+    await dispatcher.dispatch(test_update)
 
     assert user_state == "WAIT_FOR_PIZZA_NAME"
