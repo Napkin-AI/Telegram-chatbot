@@ -4,6 +4,12 @@ from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
 import asyncio
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO
+)
+
 
 class FinishOrder(Handler):
 
@@ -28,6 +34,7 @@ class FinishOrder(Handler):
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
+        logger.info("[HANDLER] handle FinishOrder start")
         telegram_id = update["callback_query"]["from"]["id"]
         callback_data = update["callback_query"]["data"]
 
@@ -52,6 +59,7 @@ class FinishOrder(Handler):
                 },
                 "from": {"id": update["callback_query"]["from"]["id"]},
             }
+            logger.info("[HANDLER] handle FinishOrder end")
             return HandlerStatus.CONTINUE
         else:
             await asyncio.gather(
@@ -61,4 +69,5 @@ class FinishOrder(Handler):
                     text="ORDER SUCCESSFULLY FINISHED!",
                 ),
             )
+        logger.info("[HANDLER] handle FinishOrder end")
         return HandlerStatus.STOP

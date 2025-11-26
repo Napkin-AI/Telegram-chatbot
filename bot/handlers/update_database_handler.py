@@ -3,6 +3,12 @@ from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO
+)
+
 
 class UpdateDatabaseHandler(Handler):
 
@@ -24,5 +30,7 @@ class UpdateDatabaseHandler(Handler):
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
+        logger.info("[HANDLER] UpdateDatabaseHandler handle start")
         await storage.persist_updates([update])
+        logger.info("[HANDLER] UpdateDatabaseHandler handle end")
         return HandlerStatus.CONTINUE

@@ -3,6 +3,12 @@ from bot.domain.messenger import Messanger
 from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO
+)
+
 
 class EnsureUserExists(Handler):
 
@@ -24,6 +30,8 @@ class EnsureUserExists(Handler):
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
+        logger.info("[HANDLER] EnsureUserExists handle start")
         telegram_id = update["message"]["from"]["id"]
         await storage.ensure_user_exists(telegram_id)
+        logger.info("[HANDLER] EnsureUserExists handle end")
         return HandlerStatus.CONTINUE

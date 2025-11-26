@@ -5,6 +5,12 @@ from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
 import asyncio
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO
+)
+
 
 class SelectPizzaHandler(Handler):
 
@@ -28,6 +34,7 @@ class SelectPizzaHandler(Handler):
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
+        logger.info("[HANDLER] SelectPizzaHandler handle start")
         telegram_id = update["callback_query"]["from"]["id"]
         callback_data = update["callback_query"]["data"]
         pizza_name = callback_data.replace("pizza_", "").replace("_", "").title()
@@ -46,5 +53,5 @@ class SelectPizzaHandler(Handler):
                 reply_markup=json_data.select_size,
             ),
         )
-
+        logger.info("[HANDLER] SelectPizzaHandler handle start")
         return HandlerStatus.STOP

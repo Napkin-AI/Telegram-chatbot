@@ -5,6 +5,13 @@ from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
 import asyncio
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO
+)
+
+
 
 class SelectDrinks(Handler):
 
@@ -28,6 +35,7 @@ class SelectDrinks(Handler):
         storage: Storage,
         messanger: Messanger,
     ) -> bool:
+        logger.info("[HANDLER] SelectDrinks handle start")
         telegram_id = update["callback_query"]["from"]["id"]
         callback_data = update["callback_query"]["data"]
         drink = callback_data.replace("drink_", "").title()
@@ -51,6 +59,7 @@ class SelectDrinks(Handler):
                 ),
                 storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PIZZA_NAME),
             )
+            logger.info("[HANDLER] SelectDrinks handle end")
             return HandlerStatus.CONTINUE
         else:
             print(user_order)
@@ -59,5 +68,5 @@ class SelectDrinks(Handler):
                 text=f"Approve order\nPizza: {user_order['pizza_name']}\nSize: {user_order['pizza_size']}\nDrink: {user_order['drink']}",
                 reply_markup=json_data.approve_json,
             )
-
+        logger.info("[HANDLER] SelectDrinks handle end")
         return HandlerStatus.STOP
