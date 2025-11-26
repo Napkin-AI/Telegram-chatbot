@@ -5,10 +5,9 @@ from bot.domain.order_state import OrderState
 import asyncio
 
 import logging
+
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO
-)
+logging.basicConfig(level=logging.INFO)
 
 
 class FinishOrder(Handler):

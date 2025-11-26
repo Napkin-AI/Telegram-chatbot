@@ -9,10 +9,7 @@ from bot.domain.storage import Storage
 from bot.domain.order_state import OrderState
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO
-)
-
+logging.basicConfig(level=logging.INFO)
 
 
 class MessageStartHandler(Handler):

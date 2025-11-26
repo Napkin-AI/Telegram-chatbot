@@ -8,9 +8,7 @@ from bot.domain.messenger import Messanger
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO
-)
+logging.basicConfig(level=logging.INFO)
 
 
 class MessangerTelegram(Messanger):
