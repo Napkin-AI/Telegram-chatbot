@@ -3,7 +3,7 @@ from bot.infrastructure.database_postgres import StoragePostgres
 
 
 async def main():
-    StoragePostgres().recreate_database()
+    await StoragePostgres().recreate_database()
 
 
 if __name__ == "__main__":
