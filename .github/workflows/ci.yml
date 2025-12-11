@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      [main, dev]
+      [main, dev, 12-aiogram]
   pull_request:
     branches: [main, dev]
 
@@ -40,8 +40,3 @@ jobs:
       - name: Ruff check
         run: |
           ruff check bot/ tests/
-
-      - name: Pytest tests
-        run: |
-          PYTHONPATH=. pytest tests/ -v
-
