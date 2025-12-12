@@ -31,7 +31,7 @@ async def test_update_database_execution():
 
     persist_update_called = False
 
-    async def persist_updates(updates: list[dict]) -> None:
+    async def save_updates(updates: list[dict]) -> None:
         nonlocal persist_update_called
         persist_update_called = True
         assert len(updates) == 1
@@ -41,7 +41,7 @@ async def test_update_database_execution():
         assert telegram_id == 99121
         return None
 
-    mock_storage = Mock({"persist_updates": persist_updates, "get_user": get_user})
+    mock_storage = Mock({"save_updates": save_updates, "get_user": get_user})
 
     dispatcher = Dispatcher(mock_storage, Mock({}))
     update_logger = UpdateDatabaseHandler()

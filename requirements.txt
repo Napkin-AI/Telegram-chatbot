@@ -1,5 +1,7 @@
-python-dotenv
-black
-ruff
-pytest
 aiogram
+aiohttp
+asyncpg
+black
+pytest-asyncio
+python-dotenv
+ruff

@@ -2,49 +2,45 @@ import asyncio
 import logging
 import os
 
-from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message, Update
-from aiogram.utils.serialization import deserialize_telegram_object_to_python
-import dotenv
+from aiogram import Bot, Dispatcher
+from dotenv import load_dotenv
 
-dotenv.load_dotenv()
+from bot.domain.storage import Storage
+from bot.handlers import get_handlers
+from bot.infrastructure.storage_postgres import StoragePostgres
+from bot.middlewares.save_update_and_create_user import SaveUdpateMiddleware
+from bot.middlewares.database_injection import PSQLInjection
 
-dispatcher = Dispatcher()
-
-
-@dispatcher.update.outer_middleware()
-async def logger_middleware(handler: callable, event: Update, data: dict):
-    payload = deserialize_telegram_object_to_python(event)
-
-    # print(json.dumps(payload, ensure_ascii=False, indent=2))
-
-    print(f"update_id: {payload['update_id']}")
-    if "message" in payload:
-        dct = payload["message"]
-        print(f"message_id: {dct['message_id']}")
-        if "chat" in dct:
-            print(f"chat_id: {dct['chat']['id']}")
-            print(f"username: {dct['chat']['username']}")
-
-    return await handler(event, data)
-
-
-@dispatcher.message(F.text)
-async def massage_handler(message: Message):
-    await message.answer(message.text)
-
-
-@dispatcher.message(F.photo)
-async def photo_handler(message: Message):
-    await message.answer_photo(message.photo[-1].file_id)
-
+load_dotenv()
 
 async def main() -> None:
-    token = os.getenv("TOKEN")
-    bot = Bot(token=token)
-    await dispatcher.start_polling(bot)
+
+    storage: Storage = StoragePostgres()
+    dispatcher = Dispatcher()
+
+    async with Bot(token=os.getenv("TELEGRAM_TOKEN")) as bot:
+        dispatcher.update.outer_middleware(PSQLInjection(storage))
+        dispatcher.update.outer_middleware(SaveUdpateMiddleware())
+        dispatcher.include_routers(*get_handlers())
+
+        try:
+            await dispatcher.start_polling(bot)
+        except KeyboardInterrupt:
+            print("\nBot was killed!")
+        finally:
+            if hasattr(storage, "close"):
+                await storage.close()
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    if not os.getenv("TELEGRAM_TOKEN"):
+        print("TELEGRAM_TOKEN is undefined, you should add it to environment!")
+        raise SystemExit(1)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="[%(asctime)s.%(msecs)03d] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     asyncio.run(main())
+

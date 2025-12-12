@@ -1,0 +1,10 @@
+[2025-12-12 16:06:50.390] Start polling
+[2025-12-12 16:06:50.770] Run polling for bot @unn_mironov_bot id=8323023509 - 'Миронов А.И.'
+[2025-12-12 16:07:45.348] [DB] → ensure_user_exists - SELECT/INSERT users
+[2025-12-12 16:07:45.349] [DB] ✗ ensure_user_exists - 1.09ms - Error: cannot access local variable 'req_env' where it is not associated with a value
+[2025-12-12 16:07:45.350] [DB] → save_update - INSERT INTO telegram_events (payload) VALUES ($1)
+[2025-12-12 16:07:45.350] [DB] ✗ save_update - 0.41ms - Error: cannot access local variable 'req_env' where it is not associated with a value
+[2025-12-12 16:07:45.665] Update id=687312801 is handled. Duration 523 ms by bot id=8323023509
+[2025-12-12 16:07:58.511] Received SIGINT signal
+[2025-12-12 16:07:58.512] Polling stopped for bot @unn_mironov_bot id=8323023509 - 'Миронов А.И.'
+[2025-12-12 16:07:58.513] Polling stopped

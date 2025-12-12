@@ -24,13 +24,13 @@ pytest: $(VENV_DIR)
 test: black ruff pytest
 
 
-DOCKER_NETWORK=pizza_bot_network
+DOCKER_NETWORK=cinema_bot_network
 
-POSTGRES_VOLUME=postgres_data
+POSTGRES_VOLUME=postgres_cinema
 POSTGRES_CONTAINER=postgres_17
 
-BOT_IMAGE=napkinai/unn_pizza_bot
-BOT_CONTAINER=pizza_bot
+BOT_IMAGE=napkinai/cinema_bot
+BOT_CONTAINER=cinema_bot
 
 # Автоматически загружаем переменные из .env
 include .env
@@ -75,7 +75,6 @@ run: docker_net
 	docker run -d \
 	  --name $(BOT_CONTAINER) \
 	  --restart unless-stopped \
-	  -e TELEGRAM_BASE_URI="${TELEGRAM_BASE_URI}" \
 	  -e POSTGRES_HOST="$(POSTGRES_CONTAINER)" \
 	  -e POSTGRES_PORT="5432" \
 	  -e POSTGRES_USER="$(POSTGRES_USER)" \

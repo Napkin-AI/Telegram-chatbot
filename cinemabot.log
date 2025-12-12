@@ -1,0 +1,10 @@
+[2025-12-12 16:09:02.156] Start polling
+[2025-12-12 16:09:02.463] Run polling for bot @unn_mironov_bot id=8323023509 - 'Миронов А.И.'
+[2025-12-12 16:09:11.356] [DB] → ensure_user_exists - SELECT/INSERT users
+[2025-12-12 16:09:11.358] [DB] ✗ ensure_user_exists - 1.31ms - Error: sequence item 1: expected str instance, NoneType found
+[2025-12-12 16:09:11.358] [DB] → save_update - INSERT INTO telegram_events (payload) VALUES ($1)
+[2025-12-12 16:09:11.358] [DB] ✗ save_update - 0.52ms - Error: sequence item 1: expected str instance, NoneType found
+[2025-12-12 16:09:11.793] Update id=687312802 is handled. Duration 616 ms by bot id=8323023509
+[2025-12-12 16:09:57.691] Received SIGINT signal
+[2025-12-12 16:09:57.692] Polling stopped for bot @unn_mironov_bot id=8323023509 - 'Миронов А.И.'
+[2025-12-12 16:09:57.692] Polling stopped
