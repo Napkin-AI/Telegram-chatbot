@@ -12,6 +12,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+
 class StoragePostgres(Storage):
     def __init__(self) -> None:
         self._pool: asyncpg.Pool | None = None
@@ -19,8 +20,13 @@ class StoragePostgres(Storage):
     async def _get_pool(self) -> asyncpg.Pool:
         """Create and return connection pool for PostgreSQL"""
         if self._pool is None:
-            req_env_name = ["POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_USER",
-                            "POSTGRES_PASSWORD", "POSTGRES_DATABASE"]
+            req_env_name = [
+                "POSTGRES_HOST",
+                "POSTGRES_PORT",
+                "POSTGRES_USER",
+                "POSTGRES_PASSWORD",
+                "POSTGRES_DATABASE",
+            ]
 
             req_env = [os.getenv(env_code) for env_code in req_env_name]
 
@@ -30,12 +36,18 @@ class StoragePostgres(Storage):
                     if val is None:
                         raise_str.append(name)
 
-                raise ValueError(f"Environment variable{' is ' if len(raise_str) == 1 else 's are '} not set: [{' '.join(raise_str)}])")
+                raise ValueError(
+                    f"Environment variable{' is ' if len(raise_str) == 1 else 's are '} not set: [{' '.join(raise_str)}])"
+                )
 
             host, port, user, password, database = req_env
+            if port is None:
+                port = 5432
+            else:
+                port = int(port)
             self._pool = await asyncpg.create_pool(
                 host=host,
-                port=int(port),
+                port=port,
                 user=user,
                 password=password,
                 database=database,
@@ -185,10 +197,7 @@ class StoragePostgres(Storage):
     async def clean_history(self, telegram_id: int) -> None:
         method_name = "clean_history"
 
-        sql_query = (
-            "DELETE FROM query_history "
-            "WHERE user_id = $1"
-        )
+        sql_query = "DELETE FROM query_history " "WHERE user_id = $1"
 
         start_time = time.time()
         logger.info(f"[DB] → {method_name} - {sql_query}")

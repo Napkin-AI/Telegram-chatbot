@@ -7,7 +7,7 @@ from bot.handlers import (
     message_clean_history,
     message_stats,
     find_film,
-    invalid_responce
+    invalid_responce,
 )
 
 
@@ -19,5 +19,5 @@ def get_handlers() -> list[Router]:
         message_clean_history.router,
         message_stats.router,
         find_film.router,
-        invalid_responce.router
+        invalid_responce.router,
     ]

@@ -19,11 +19,13 @@ class SaveUdpateMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: dict,
     ) -> Any:
-        storage = data.get('psql_storage', None)
+        storage = data.get("psql_storage", None)
 
         if storage is None:
             if self._storage is None:
-                raise ValueError("Database was not configurated. Please, add it to dispatcher data")
+                raise ValueError(
+                    "Database was not configurated. Please, add it to dispatcher data"
+                )
         else:
             self._storage = storage
 
@@ -37,4 +39,3 @@ class SaveUdpateMiddleware(BaseMiddleware):
         )
 
         return await handler(event, data)
-

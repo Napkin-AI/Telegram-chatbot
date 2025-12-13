@@ -2,8 +2,6 @@ aiogram
 aiohttp
 asyncpg
 black
-bs4
 google-api-python-client
-pytest-asyncio
 python-dotenv
 ruff

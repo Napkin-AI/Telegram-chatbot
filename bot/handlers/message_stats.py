@@ -4,9 +4,14 @@ from bot.domain.storage import Storage
 
 router = Router()
 
+
 @router.message(Command("stats"))
 async def stats_handler(message: types.Message, psql_storage: Storage):
-    user_id = message.from_user.id
+    user_id = message.from_user
+    if user_id is None:
+        raise ValueError("Telegram API error")
+
+    user_id = user_id.id
 
     stats = await psql_storage.get_stats(user_id)
 

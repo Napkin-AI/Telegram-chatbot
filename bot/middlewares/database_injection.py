@@ -5,6 +5,7 @@ from aiogram.types import TelegramObject
 
 from bot.domain.storage import Storage
 
+
 class PSQLInjection(BaseMiddleware):
 
     def __init__(self, storage: Storage) -> None:
@@ -18,7 +19,6 @@ class PSQLInjection(BaseMiddleware):
         data: dict,
     ) -> Any:
 
-        data['psql_storage'] = self._storage
+        data["psql_storage"] = self._storage
         print("was here")
         return await handler(event, data)
-

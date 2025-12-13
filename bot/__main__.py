@@ -13,6 +13,7 @@ from bot.middlewares.database_injection import PSQLInjection
 
 load_dotenv()
 
+
 async def main() -> None:
 
     storage: Storage = StoragePostgres()
@@ -43,4 +44,3 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     asyncio.run(main())
-
