@@ -45,6 +45,10 @@ docker_net:
 postgres_run: docker_volume docker_net
 	docker run -d \
 	  --name $(POSTGRES_CONTAINER) \
+	  -e OMDB_API_KEY="$(OMDB_API_KEY)" \
+	  -e KINOPOISK_API_KEY="$(KINOPOISK_API_KEY)" \
+	  -e GOOGLE_CX_ID="$(GOOGLE_CX_ID)" \
+	  -e GOOGLE_API_KEY="$(GOOGLE_API_KEY)" \
 	  -e POSTGRES_USER="$(POSTGRES_USER)" \
 	  -e POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" \
 	  -e POSTGRES_DB="$(POSTGRES_DATABASE)" \
@@ -81,6 +85,10 @@ run: docker_net
 	  -e POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" \
 	  -e POSTGRES_DATABASE="$(POSTGRES_DATABASE)" \
 	  -e TELEGRAM_TOKEN="$(TELEGRAM_TOKEN)" \
+	  -e OMDB_API_KEY="$(OMDB_API_KEY)" \
+	  -e KINOPOISK_API_KEY="$(KINOPOISK_API_KEY)" \
+	  -e GOOGLE_CX_ID="$(GOOGLE_CX_ID)" \
+	  -e GOOGLE_API_KEY="$(GOOGLE_API_KEY)" \
 	  --network $(DOCKER_NETWORK) \
 	  $(BOT_IMAGE)
 

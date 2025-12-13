@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      [main, dev, 12-aiogram]
+      [main, dev, bhw3]
   pull_request:
     branches: [main, dev]
 
@@ -40,3 +40,5 @@ jobs:
       - name: Ruff check
         run: |
           ruff check bot/ tests/
+# TODO
+# Tests of database, bot

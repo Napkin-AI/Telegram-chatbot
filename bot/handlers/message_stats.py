@@ -14,5 +14,5 @@ async def stats_handler(message: types.Message, psql_storage: Storage):
         await message.answer("Статистика пуста.")
         return
 
-    lines = [f"{i+1}. {s['title']} — {s['count']} раз(а)" for i, s in enumerate(stats)]
+    lines = [f"{i+1}. {s[0]} — {s[1]} раз(а)" for i, s in enumerate(stats)]
     await message.answer("Статистика ваших показов:\n\n" + "\n".join(lines))
