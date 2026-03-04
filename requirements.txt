@@ -1,0 +1,7 @@
+aiogram
+aiohttp
+asyncpg
+black
+google-api-python-client
+python-dotenv
+ruff
